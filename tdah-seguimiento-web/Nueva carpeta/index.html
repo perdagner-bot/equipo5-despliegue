@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TDAH Connect | Seguimiento Educativo 3D</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <!-- Background Particles -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor"></div>
+    <div class="custom-cursor-dot"></div>
+
+    <!-- Loader -->
+    <div class="loader-wrapper" id="loader">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-brand">
+                <div class="nav-logo">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gradient">TDAH Connect</h1>
+                    <p class="text-xs text-muted">Educación de Vanguardia</p>
+                </div>
+            </div>
+            
+            <div class="nav-user">
+                <div class="top-nav-links">
+                    <a class="top-nav-link" href="#/dashboard"><i class="fas fa-house"></i>Dashboard</a>
+                    <a class="top-nav-link" href="#/patients"><i class="fas fa-users"></i>Estudiantes</a>
+                    <a class="top-nav-link" href="#/daily"><i class="fas fa-clipboard-check"></i>Registro</a>
+                    <a class="top-nav-link" href="#/charts"><i class="fas fa-chart-pie"></i>Gráficas</a>
+                </div>
+                
+                <div class="flex items-center gap-4 ml-4">
+                    <button class="theme-toggle" id="themeToggle" title="Cambiar Tema">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="icon-button">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <div class="nav-user-avatar-icon">
+                            <i class="fas fa-chalkboard-user"></i>
+                        </div>
+                        <span class="font-semibold text-sm">Profe María</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Dashboard Overview -->
+        <section class="mb-8 app-view" data-view="dashboard">
+            <div class="card mb-6">
+                <div class="card-header">
+                    <h2 class="card-title text-gradient">Panel de Control</h2>
+                    <button class="btn btn-primary" id="newPatientBtn">
+                        <i class="fas fa-plus mr-2"></i>Nuevo Estudiante
+                    </button>
+                </div>
+                
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card blue">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <h3>Estudiantes Activos</h3>
+                                <p class="stat-value" id="statActivePatients">0</p>
+                            </div>
+                            <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card green">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <h3>Registros Hoy</h3>
+                                <p class="stat-value" id="statTodayRecords">0</p>
+                            </div>
+                            <div class="stat-icon"><i class="fas fa-clipboard-check"></i></div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card yellow">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <h3>Alertas</h3>
+                                <p class="stat-value" id="statReminders">0</p>
+                            </div>
+                            <div class="stat-icon"><i class="fas fa-bell"></i></div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card purple">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <h3>Progreso Medio</h3>
+                                <p class="stat-value" id="statAvgProgress">0%</p>
+                            </div>
+                            <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid: Recent & Actions -->
+            <div class="dashboard-container">
+                <div class="card">
+                    <h3 class="card-title mb-4">Acciones Rápidas</h3>
+                    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+                        <button class="btn btn-blue btn-full h-24 flex flex-col items-center justify-center gap-2" onclick="navigateTo('/daily')">
+                            <i class="fas fa-clipboard-list text-xl"></i>
+                            <span>Registro Diario</span>
+                        </button>
+                        <button class="btn btn-green btn-full h-24 flex flex-col items-center justify-center gap-2" onclick="navigateTo('/patients')">
+                            <i class="fas fa-users text-xl"></i>
+                            <span>Ver Estudiantes</span>
+                        </button>
+                        <button class="btn btn-purple btn-full h-24 flex flex-col items-center justify-center gap-2" onclick="navigateTo('/charts')">
+                            <i class="fas fa-chart-pie text-xl"></i>
+                            <span>Reportes</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title mb-4">Atajos</h3>
+                    <ul class="flex flex-col gap-2">
+                        <li class="p-3 bg-white/50 rounded-lg flex items-center gap-3">
+                            <i class="fas fa-file-pdf text-danger"></i>
+                            <span class="text-sm">Exportar PDF semanal</span>
+                        </li>
+                        <li class="p-3 bg-white/50 rounded-lg flex items-center gap-3">
+                            <i class="fas fa-calendar-alt text-primary"></i>
+                            <span class="text-sm">Calendario de citas</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Patients List -->
+        <section class="mb-8 app-view hidden" data-view="patients">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title text-gradient">Directorio de Estudiantes</h3>
+                    <div class="search-container">
+                        <input type="text" placeholder="Buscar..." class="search-input" id="patientSearchInput">
+                        <button class="btn btn-primary" id="newPatientBtn2">
+                            <i class="fas fa-user-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Estudiante</th>
+                                <th>Edad</th>
+                                <th>Último registro</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientsTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Patient Form -->
+        <section class="mb-8 app-view hidden" data-view="new">
+            <div class="card max-w-2xl mx-auto">
+                <div class="card-header">
+                    <h3 class="card-title text-gradient">Alta de Estudiante</h3>
+                    <a class="btn btn-purple" href="#/patients"><i class="fas fa-list mr-2"></i>Volver</a>
+                </div>
+
+                <form id="newPatientForm" class="form-grid">
+                    <div class="form-field">
+                        <label class="form-label">Nombre completo</label>
+                        <input class="form-input" name="name" type="text" placeholder="Ej: Juan Pérez" required>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Fecha de nacimiento</label>
+                        <input class="form-input" name="birthDate" type="date" required>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Acudiente</label>
+                        <input class="form-input" name="guardian" type="text" placeholder="Nombre del tutor">
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Estado</label>
+                        <select class="form-input" name="status" required>
+                            <option value="stable">Estable</option>
+                            <option value="observation">En observación</option>
+                            <option value="improving">Mejorando</option>
+                        </select>
+                    </div>
+                    <div class="form-field form-field-span">
+                        <label class="form-label">Observaciones</label>
+                        <textarea class="form-input" name="notes" rows="4"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" type="submit">Guardar Estudiante</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Daily Record -->
+        <section class="mb-8 app-view hidden" data-view="daily">
+            <div class="card max-w-2xl mx-auto">
+                <div class="card-header">
+                    <h3 class="card-title text-gradient">Registro de Seguimiento</h3>
+                </div>
+                <form id="dailyRecordForm" class="form-grid">
+                    <div class="form-field">
+                        <label class="form-label">Estudiante</label>
+                        <select class="form-input" id="drStudent" name="studentId" required></select>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Fecha</label>
+                        <input class="form-input" id="drDate" name="date" type="date" required>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Atención (1-5)</label>
+                        <input type="range" class="form-input" name="attention" min="1" max="5" step="1" value="3">
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Tareas completadas</label>
+                        <select class="form-input" name="tasksCompleted">
+                            <option value="yes">Sí</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" type="submit">Guardar Registro</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Charts -->
+        <section class="mb-8 app-view hidden" data-view="charts">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title text-gradient">Análisis Visual</h3>
+                    <button class="btn btn-purple" id="refreshChartsBtn">
+                        <i class="fas fa-sync-alt mr-2"></i>Actualizar
+                    </button>
+                </div>
+                <div class="charts-grid">
+                    <div class="card glass-panel">
+                        <h4 class="mb-4 font-bold">Distribución por Estado</h4>
+                        <canvas id="chartByStatus"></canvas>
+                    </div>
+                    <div class="card glass-panel">
+                        <h4 class="mb-4 font-bold">Grupos de Edad</h4>
+                        <canvas id="chartByAge"></canvas>
+                    </div>
+                </div>
+                <div class="mt-8 card glass-panel">
+                    <h4 class="mb-4 font-bold">Evolución Semanal de Atención</h4>
+                    <div class="flex gap-4 mb-4 flex-wrap">
+                        <select id="chartsStudent" class="form-input w-64"></select>
+                        <input type="date" id="chartsWeekEnd" class="form-input w-64">
+                        <button class="btn btn-blue" id="exportWeeklyBtn">TXT</button>
+                        <button class="btn btn-purple" id="exportWeeklyPdfBtn">PDF</button>
+                    </div>
+                    <canvas id="chartWeeklyAttention"></canvas>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Floating Action Button -->
+    <button class="fab" id="fabButton">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>
