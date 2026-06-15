@@ -26,8 +26,7 @@ Los datos se guardan en tu navegador usando `localStorage`.
 GitHub Pages
 
 ## URL del sitio desplegado
-[https://TUUSUARIO.github.io/NOMBREREPO/](https://TUUSUARIO.github.io/NOMBREREPO/)
-
+https://perdagner-bot.github.io/equipo5-despliegue/
 ## Tecnologías utilizadas
 - HTML5
 - CSS3
